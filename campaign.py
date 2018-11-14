@@ -54,12 +54,11 @@ def edit_campaign(id):
     owner_email = None
     user_email = None
     is_admin = g.user['is_admin']
-    print('is_admin is :' + str(is_admin))
 
     try:
         cursor.execute("""SELECT user_account_email FROM campaign_relation WHERE campaign_id=%s AND user_role='owner'""",
                        (id,))
-        owner_email = cursor.fetchone()
+        owner_email = cursor.fetchone()[0]
 
 
         cursor.execute("""SELECT email FROM user_account WHERE user_account.id=%s""", (session['user_id'],))
@@ -70,6 +69,7 @@ def edit_campaign(id):
     except Exception as e:
         current_app.logger.error(e)
 
+    print('user_email is ' + user_email + '\towner_email is ' + owner_email + '\tis_admin is ' + str(is_admin))
     if owner_email != user_email and not is_admin:
         flash("You cannot edit a campaign you don't own!", 'error')
         return redirect(url_for("campaign.view_campaign", id=id))
